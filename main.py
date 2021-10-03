@@ -1,10 +1,9 @@
 # Imports
 import pygame
 import random, time, sys
-from pygame.locals import *
+from images import *
 
 pygame.init()
-pygame.font.init()
 
 WIDTH = 1280
 HEIGHT = 720
@@ -19,38 +18,12 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # Images
 bg_img = pygame.image.load("Images/bg.jpg")
 
-# Images/Powerups
-superball_img = pygame.image.load("Images/Powerups/super.png")
-containheart_img = pygame.image.load("Images/Powerups/heart.png")
-smartbomb_img = pygame.image.load("Images/Powerups/smartbomb.png")
-freezie_img = pygame.image.load("Images/Powerups/freezie.png")
-tomato_img = pygame.image.load("Images/Powerups/tomato.png")
-
-# Images/Chars
-falco_img = pygame.image.load("Images/Chars/falco.webp")
-game_img = pygame.image.load("Images/Chars/game.webp")
-ganondorf_img = pygame.image.load("Images/Chars/ganondorf.webp")
-mario_img = pygame.image.load("Images/Chars/mario.webp")
-metaknight_img = pygame.image.load("Images/Chars/meta_knight.webp")
-ness_img = pygame.image.load("Images/Chars/ness.webp")
-olimar_img = pygame.image.load("Images/Chars/olimar.webp")
-pit_img = pygame.image.load("Images/Chars/pit.webp")
-rob_img = pygame.image.load("Images/Chars/rob.webp")
-sonic_img = pygame.image.load("Images/Chars/sonic.webp")
-wolf_img = pygame.image.load("Images/Chars/wolf.webp")
-
-# Images/Chars Rotated
-rot_falco_img = pygame.transform.flip(falco_img, True, False)
-rot_game_img = pygame.transform.flip(falco_img, True, False)
-rot_ganondorf_img = pygame.transform.flip(falco_img, True, False)
-rot_mario_img = pygame.transform.flip(falco_img, True, False)
-rot_metaknight_img = pygame.transform.flip(falco_img, True, False)
-rot_ness_img = pygame.transform.flip(falco_img, True, False)
-rot_olimar_img = pygame.transform.flip(falco_img, True, False)
-rot_pit_img = pygame.transform.flip(falco_img, True, False)
-rot_rob_img = pygame.transform.flip(falco_img, True, False)
-rot_sonic_img = pygame.transform.flip(falco_img, True, False)
-rot_wolf_img = pygame.transform.flip(falco_img, True, False)
+def handle_players(players):
+  screen.blit(bg_img, (0,0))
+  screen.blit(players[0], (200,300))
+  screen.blit(players[1], (800,300))
+  pygame.display.update()
+  
 
 class InputBox:
   def __init__(self, x, y, w, h, text=''):
@@ -65,22 +38,23 @@ class InputBox:
       # If the user clicked on the input_box rect.
       if self.rect.collidepoint(event.pos):
         # Toggle the active variable.
-          self.active = not self.active
+        self.active = not self.active
       else:
         self.active = False
-        # Change the current color of the input box.
-        self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
+      # Change the current color of the input box.
+      self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
     if event.type == pygame.KEYDOWN:
       if self.active:
         if event.key == pygame.K_RETURN:
-          print(self.text)
-          self.text = ''
+          if self.text == "falco + mario":
+            players = [falco_img,rot_mario_img]
+            handle_players(players)
         elif event.key == pygame.K_BACKSPACE:
           self.text = self.text[:-1]
         else:
           self.text += event.unicode
-      # Re-render the text.
-      self.txt_surface = FONT.render(self.text, True, self.color)
+        # Re-render the text.
+        self.txt_surface = FONT.render(self.text, True, self.color)
 
   def update(self):
     # Resize the box if the text is too long.
@@ -99,25 +73,24 @@ def main():
   #screen.blit(bg_img, (0,0))
   input_box = InputBox(WIDTH//2-90, HEIGHT//2-30, 60, 40, "")
   inputbox = [input_box]
-
-
-  # screen.blit(falco_img, (200,300))
-  # Image side chars are 200 on 300
-  # screen.blit(rot_falco_img, (880,300))
-  # Rotated side chars are 800 on 300
-
+  screen.fill((30, 30, 30))
+  #screen.blit(falco_img, (200,300))
+  #Image side chars are 200 on 300
+  #screen.blit(rot_falco_img, (800,300))
+  #Rotated side chars are 800 on 300
   pygame.display.update()
 
-
-  running = True
-  while running:
+  done = False
+  while not done:
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
-        running = False
+        done = True
       for box in inputbox:
         box.handle_event(event)
+
     for box in inputbox:
       box.update()
+
     for box in inputbox:
       box.draw(screen)
     pygame.display.flip()
@@ -125,4 +98,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-  pygame.quit()
